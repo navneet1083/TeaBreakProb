@@ -132,7 +132,7 @@ class TweetClassifier {
 			}
 			
 		}
-		System.out.println("\n----------------------------------------------------------------------------");
+		System.out.println("\n-----------------------------------------------------------------------------");
 		System.out.println("## Labels Count ##");
 		for(String cat : categoryCounts.keySet()){
 			System.out.print(cat+":"+categoryCounts.get(cat)+",");		
