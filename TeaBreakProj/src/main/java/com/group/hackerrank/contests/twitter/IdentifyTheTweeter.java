@@ -13,7 +13,11 @@ import java.util.regex.Pattern;
 
 
 
-
+/************************************************************************************
+ * The Tweet Classifier: Uses Baysean probability model for tweet classification.
+ * @author yash.sharma
+ ************************************************************************************
+ */
 class TweetClassifier {
 	
 	private Map<String, Map<String, Integer>> wordmap;
@@ -55,11 +59,7 @@ class TweetClassifier {
 		}
 		else{
 			wordmap.get(word).put(category,  wordmap.get(word).get(category)+1);			
-		}
-		
-		/** also increment the total category count **/
-		// should be one per tweet
-		//categoryCounts.put(category, categoryCounts.get(category)+1);
+		}	
 		
 	}
 	
@@ -68,7 +68,12 @@ class TweetClassifier {
 		return ((wordmap.get(word)==null ? 0 : wordmap.get(word).get(category))== 0) ? 0 : (wordmap.get(word)==null ? 0 : wordmap.get(word).get(category)) ;
 	}
 	
-	
+	/**
+	 * Returns the number of times the word has been encountred so long,
+	 * across all categories.
+	 * @param word
+	 * @return
+	 */
 	private int getOverallCatCountForWord(String word){
 		
 		Map<String, Integer> map = wordmap.get(word);
@@ -85,12 +90,21 @@ class TweetClassifier {
 		
 	}
 	
+	/**
+	 * Get number of tweets encountred in this given category.
+	 * @param category
+	 * @return
+	 */
 	private int getCategoryCount(String category){
 		return categoryCounts.get(category)==null ? 0 : categoryCounts.get(category);
 	}
 	
 	
-	/** This is also equal to the total number of words processed **/
+	/**
+	 * This gives the num of tweets across all categories.
+	 * This is also equal to the total number of tweets processed.
+	 * @return
+	 */
 	private int getAllCategoriesCount(){
 		int sum = 0;
 		
@@ -129,7 +143,12 @@ class TweetClassifier {
 	}
 	
 	
-	
+	/**
+	 * The main training method for training the classifier. 
+	 * Trains the classifier by word occurence for given label. 
+	 * @param tweet
+	 * @param category
+	 */
 	public void trainClassifier(String tweet, String category){
 		String[] words = DataUtil.getWords(tweet);
 		
@@ -148,11 +167,19 @@ class TweetClassifier {
 	
 	
 	
-	
+	/**
+	 * Method to get the prob of a word to fall in a given category. 
+	 * It also weights the prob, which still gives 50% prob to word if it has never been encountred.
+	 * @param word
+	 * @param category
+	 * @return
+	 */
 	private float getWordProbabilityForGivenCat(String word, String category){
 		float basicprob =  getCategoryCountForWord(word, category)/(float)getCategoryCount(category);
 		
 		/** Normalize probability now **/
+		/** Basic prob is given a weight of the countOfOccurance, and assumed prob is given a weight of 1 **/
+		/** So if a num has never been encountred it still has 0.5 prob **/
 		float weight = 1.0f;
 		float assumedProb = 0.5f;
 		int allWordOccurances = getOverallCatCountForWord(word);
@@ -163,7 +190,13 @@ class TweetClassifier {
 	}
 	
 	
-	
+	/**
+	 * Gets the product of individual word prob to calculate overall tweet prob.
+	 * Uses the getWordProbabilityForGivenCat() method internally for every word of the tweet.
+	 * @param tweet
+	 * @param category
+	 * @return
+	 */
 	private float getTweetProbabilityForGivenCat(String tweet, String category){
 		String[] words = DataUtil.getWords(tweet);
 		
@@ -197,21 +230,33 @@ class TweetClassifier {
 	}
 	
 	
-	
+	/**
+	 * Probability/chances of a particular category in general.
+	 * @param category
+	 * @return
+	 */
 	private float getProbabilityForGivenDocument(String category){
 		return (getCategoryCount(category)/(float)getAllCategoriesCount());
 	}
 	
 	
-	
+	/**
+	 * Baysean probability: P(Doc|Cat) * P(Cat)
+	 * @param tweet
+	 * @param category
+	 * @return
+	 */
 	private float bayseanProb(String tweet, String category){
-		//System.out.println("Baysean prob, CAT:"+category);
-		
 		return (getTweetProbabilityForGivenCat(tweet, category)*getProbabilityForGivenDocument(category));
 	}
 	
 	
-	
+	/**
+	 * Simply gets the probability of all labels for the given tweet,
+	 * and returns the label with max probability.
+	 * @param tweet
+	 * @return
+	 */
 	public String classifyBaysean(String tweet){
 		
 		tweet = tweet.toLowerCase();
@@ -238,7 +283,12 @@ class TweetClassifier {
 
 
 
-
+/**************************************************************************************************************
+ * Data Util Class for removing stop words n urls from tweet.
+ * Also splits tweet into array of words splitting by any non-alphabetic character.
+ * @author yash.sharma
+ **************************************************************************************************************
+ */
 class DataUtil {
 	
 	private static final Map<String, Integer> STOPWORD_MAP;
@@ -329,7 +379,11 @@ class DataUtil {
 
 
 
-
+/*********************************************************************************
+ * Main Class Stub for calling the tweet classifier.
+ * @author yash.sharma
+ *********************************************************************************
+ */
 public class IdentifyTheTweeter {
 	
 	
