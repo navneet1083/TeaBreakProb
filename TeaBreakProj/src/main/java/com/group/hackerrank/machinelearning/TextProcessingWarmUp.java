@@ -67,20 +67,24 @@ import java.util.regex.Pattern;
 public class TextProcessingWarmUp {
 
     public static void main(String[] args) {
-        System.out.println("testing");
-        //1 asdf asdf asdf athe the the asdfasd the an format an 12/02/2013 12/04/12
+        String patternDate = "((\\d{2}/\\d{2}/(\\d{4}|\\d{2}))|((\\d{2}|\\d{1})?(st|nd|rd|th)?(\\s|\\sof\\s)"
+                + "((?i)January|February|March|April|May|June|July|August|September|October|November|December)"
+                + "(((\\s|,)(\\d{4}|\\d{2}([^a-zA-Z])))|((\\d{2}([^a-zA-Z]))(|,)(\\s\\d{4})))))";
         Scanner in = new Scanner(System.in);
         int noOfLines = in.nextInt();
         in.nextLine();
         for (int i = 0; i < noOfLines; i++) {
             String inputStr = in.nextLine();
             in.nextLine();
-            int aCount = computeCount(inputStr, " a ");
-            System.out.println("a occurs count : " + aCount);
-            System.out.println("an count : " + computeCount(inputStr, " an "));
-            System.out.println("the count : " + computeCount(inputStr, " the "));
-            String patternDate = "((\\d{2}/\\d{2}/(\\d{4}|\\d{2}))|((\\d{2}|\\d{1})(st|nd|rd|th)(\\s|\\sof\\s)(January|February|March|April|May|June|July|August|September|October|November|December)(\\s|,)(\\d{4}|\\d{2})))";
-            System.out.println("date count : "+computeCount(inputStr,patternDate));
+            int aCount = computeCount(inputStr, "[^a-zA-Z](?i)a[^a-zA-Z]");
+//            System.out.println("a occurs count : " + aCount);
+//            System.out.println("an count : " + computeCount(inputStr, " (?i)an "));
+//            System.out.println("the count : " + computeCount(inputStr, "([^a-zA-Z]|)(?i)the[^a-zA-Z]"));
+//            System.out.println("date count : " + computeCount(inputStr, patternDate));
+            System.out.println(aCount);
+            System.out.println(computeCount(inputStr, "[^a-zA-Z](?i)an[^a-zA-Z]"));
+            System.out.println(computeCount(inputStr, "([^a-zA-Z]|)(?i)the[^a-zA-Z]"));
+            System.out.println(computeCount(inputStr, patternDate));
         }
     }
 
