@@ -1,3 +1,8 @@
+/** **
+ * **************************************************************************
+ ******************************* NOT COMPLETED ******************************
+ * **************************************************************************
+ */
 package com.group.hackerrank.algorithms.search;
 
 import java.util.HashMap;
@@ -5,35 +10,37 @@ import java.util.Scanner;
 
 public class Median {
 
-    private Node head;
+    private Node head = null;
     private int size;
 
     public Median() {
-        head = new Node();
+//        head = new Node();
     }
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         int noOfLines = in.nextInt();
         String[] label = new String[noOfLines];
-        int[] num = new int[noOfLines];
+        long[] num = new long[noOfLines];
         Median sl = new Median();
-        HashMap<Integer, String> keyVal = new HashMap<Integer, String>();
+        HashMap<Long, String> keyVal = new HashMap<Long, String>();
         for (int i = 0; i < noOfLines; i++) {
             label[i] = in.next();
-            num[i] = in.nextInt();
+            num[i] = in.nextLong();
             if (label[i].equals("a")) {
                 if (keyVal.containsKey(num[i])) {
                     String temp = keyVal.get(num[i]);
-                    temp += "," + i + 1;
+                    temp += "," + (i + 1);
                     keyVal.put(num[i], temp);
                 } else {
-                    String temp = "" + i + 1;
+                    String temp = "" + (i + 1);
                     keyVal.put(num[i], temp);
                 }
             }
 
-            if (!keyVal.containsKey(num[i]) && label[i].equals("r")) {
+            if (!keyVal.containsKey(num[i])) {
+                System.out.println("Wrong!");
+            } else if (!keyVal.containsKey(num[i]) && label[i].equals("r")) {
                 System.out.println("Wrong!");
             } else {
                 if (label[i].equals("a")) {
@@ -43,7 +50,19 @@ public class Median {
                     if (sl.isEmpty()) {
                         System.out.println("Wrong!");
                     } else {
-                        sl.removeData(num[i]);
+                        if (keyVal.get(num[i]) != null) {
+                            String[] val = keyVal.get(num[i]).split(",");
+                            if (val.length == 1) {
+                                keyVal.remove(num[i]);
+                            } else {
+                                String temp = keyVal.get(num[i]).split(",")[0];
+                                String newVal = keyVal.get(num[i]).replaceAll(temp + ",", "");
+                                keyVal.put(num[i], newVal);
+                            }
+
+                        }
+                        long temp = num[i];
+                        sl.removeData(temp);
                     }
                 }
 
@@ -63,7 +82,7 @@ public class Median {
                     } else {
                         if (len == 1) {
 //                            median = num[i];
-                            System.out.println(sl.get(1));
+                            System.out.println(sl.get(len));
 
                         } else {
                             median = (float) (len - 1) / 2;
@@ -82,34 +101,48 @@ public class Median {
         }
     }
 
-    public void add(long data) {
-        Node temp = new Node(data);
-        Node node = head;
-        int index = 1;
-        boolean checkStatus = true;
-        while (node.getNext() != null) {
-            node = node.getNext();
-            /**
-             * Maintain the order
-             */
-            if (data < node.data) {
-                add(data, index);
-                checkStatus = false;
-                break;
+    public boolean add(long item) {
+        add(size, item);
+        return true;
+    }
+
+    public void addFirst(long dataItem) {
+        head = new Node(head, dataItem);
+        size++;
+    }
+
+    public void add(int size, long data) {
+        if (size == 0) {
+            addFirst(data);
+        } else {
+            Node temp = new Node(data);
+            Node node = head;
+            int index = 1;
+            boolean checkStatus = true;
+            while (node.getNext() != null) {
+                node = node.getNext();
+                /**
+                 * Maintain the order
+                 */
+                if (data < node.data) {
+                    add(data, index);
+                    checkStatus = false;
+                    break;
+                }
+
+                index++;
             }
 
-            index++;
-        }
-
-        if (checkStatus) {
-            node.setNext(temp);
-            size++;
+            if (checkStatus) {
+                node.setNext(temp);
+                this.size++;
+            }
         }
     }
 
     @Override
     public String toString() {
-        Node node = head.getNext();
+        Node node = head;
         String output = "";
         while (node != null) {
             output += "[" + node.getData() + "]";
@@ -133,15 +166,15 @@ public class Median {
         size++;
     }
 
-    public long get(int index) {
+    public Long get(int index) {
         if (index <= 0) {
-            return 0;
+            return null;
         }
 
-        Node node = head.getNext();
+        Node node = head;
         for (int i = 1; i < index; i++) {
             if (node.getNext() == null) {
-                return 0;
+                return null;
             }
 
             node = node.getNext();
@@ -167,20 +200,31 @@ public class Median {
         return true;
     }
 
-    public boolean removeData(int data) {
-        Node node = head;
-        for (int i = 1; i < size; i++) {
-            if (node.getNext() == null) {
+    public boolean removeData(long deleteItem) {
+        if (head == null) {
+            return false;
+        } else if (head.data == deleteItem) {
+            head = head.next;
+            size--;
+            return true;
+        } else {
+            Node runner;
+            Node previous;
+            runner = head.next;
+            previous = head;
+            while (runner != null && (runner.data > deleteItem)) {
+                previous = runner;
+                runner = runner.next;
+            }
+            if (runner != null && (runner.data == deleteItem)) {
+                previous.next = runner.next;
+                size--;
+                return true;
+            } else {
+                // The item does not exist in the list.
                 return false;
             }
-            node = node.getNext();
-            if (data == node.data) {
-                break;
-            }
         }
-        node.setNext(node.getNext().getNext());
-        size--;
-        return true;
     }
 
     public int size() {
