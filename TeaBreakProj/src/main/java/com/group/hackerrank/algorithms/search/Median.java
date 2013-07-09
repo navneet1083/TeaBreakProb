@@ -1,10 +1,12 @@
-/** **
+/**
+ * **
  * **************************************************************************
  ******************************* NOT COMPLETED ******************************
  * **************************************************************************
  */
 package com.group.hackerrank.algorithms.search;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -13,10 +15,6 @@ public class Median {
     private Node head = null;
     private int size;
 
-    public Median() {
-//        head = new Node();
-    }
-
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         int noOfLines = in.nextInt();
@@ -24,9 +22,11 @@ public class Median {
         long[] num = new long[noOfLines];
         Median sl = new Median();
         HashMap<Long, String> keyVal = new HashMap<Long, String>();
+        DecimalFormat format = new DecimalFormat("0.#");
         for (int i = 0; i < noOfLines; i++) {
             label[i] = in.next();
             num[i] = in.nextLong();
+//            System.out.println(label[i] + " " + num[i] + " to list");
             if (label[i].equals("a")) {
                 if (keyVal.containsKey(num[i])) {
                     String temp = keyVal.get(num[i]);
@@ -59,7 +59,6 @@ public class Median {
                                 String newVal = keyVal.get(num[i]).replaceAll(temp + ",", "");
                                 keyVal.put(num[i], newVal);
                             }
-
                         }
                         long temp = num[i];
                         sl.removeData(temp);
@@ -77,11 +76,11 @@ public class Median {
                         if (String.valueOf(median).endsWith(".0")) {
                             System.out.println(String.valueOf(median).replaceAll("\\.0$", ""));
                         } else {
-                            System.out.println(String.format("%.1f", median));
+//                            System.out.println(String.format("%.1f", median));
+                            System.out.println(format.format(median));
                         }
                     } else {
                         if (len == 1) {
-//                            median = num[i];
                             System.out.println(sl.get(len));
 
                         } else {
@@ -91,7 +90,8 @@ public class Median {
                                 long val = sl.get(medianInt + 1);
                                 System.out.println(String.valueOf(val).replaceAll("\\.0$", ""));
                             } else {
-                                System.out.println(String.format("%.1f", median));
+//                                System.out.println(String.format("%.1f", median));
+                                System.out.println(format.format(median));
                             }
                         }
                     }
@@ -113,6 +113,8 @@ public class Median {
 
     public void add(int size, long data) {
         if (size == 0) {
+            addFirst(data);
+        } else if (data < head.data) {
             addFirst(data);
         } else {
             Node temp = new Node(data);
@@ -212,7 +214,7 @@ public class Median {
             Node previous;
             runner = head.next;
             previous = head;
-            while (runner != null && (runner.data > deleteItem)) {
+            while (runner != null && (runner.data < deleteItem)) {
                 previous = runner;
                 runner = runner.next;
             }
